@@ -13,7 +13,6 @@ const Add = ({token}) => {
   const [name,setName] = useState('')
   const [description,setDescription] = useState('')
   const [category,setCategory] = useState('Console')
-  const [brand,setBrand] = useState('')
   const [price,setPrice] = useState('')
   const [bestseller,setBestseller] = useState(false)
   const [isSubmit,setIsSubmit] = useState(false)
@@ -66,10 +65,7 @@ const Add = ({token}) => {
       return;
     }
 
-    if (!brand) {
-      toast.error("Vui lòng nhập thương hiệu sản phẩm!");
-      return;
-    }
+    
   
     setIsSubmit(true)
     try {
@@ -81,7 +77,6 @@ const Add = ({token}) => {
       formData.append('name',name)
       formData.append('description',description)
       formData.append('category',category)
-      formData.append('brand',brand)
       formData.append('price',price)
       formData.append('bestseller',bestseller)
       formData.append('quantity',quantity)
@@ -97,7 +92,6 @@ const Add = ({token}) => {
         setName('')
         setDescription('')
         setCategory('Console')
-        setBrand('')
         setPrice('')
         setQuantity(0)
         setBestseller(false)

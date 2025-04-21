@@ -89,10 +89,13 @@ const Menu = () => {
                             <input className="w-3" type="checkbox" value={'Console'} onChange={toggleCategory} /> Console
                         </p>
                         <p className="flex gap-2">
-                            <input className="w-3" type="checkbox" value={'Handheld'} onChange={toggleCategory} /> Handheld
+                            <input className="w-3" type="checkbox" value={'Phụ kiện'} onChange={toggleCategory} /> Phụ kiện
                         </p>
                         <p className="flex gap-2">
-                            <input className="w-3" type="checkbox" value={'Other'} onChange={toggleCategory} /> Other
+                            <input className="w-3" type="checkbox" value={'Game'} onChange={toggleCategory} /> Game
+                        </p>
+                        <p className="flex gap-2">
+                            <input className="w-3" type="checkbox" value={'Khác'} onChange={toggleCategory} /> Khác
                         </p>
                     </div>
                 </div>
