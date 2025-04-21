@@ -3,7 +3,6 @@ import userModel from '../models/userModel.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import validator from 'validator'
-import roomModel from '../models/roomModel.js'
 
 const createToken = (id) => {
     return jwt.sign({id},process.env.JWT_SECRET)
