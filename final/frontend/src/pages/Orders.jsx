@@ -141,7 +141,7 @@ const Orders = () => {
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                       : "bg-red-500 text-white hover:bg-red-600"
                   }`}
-                  onClick={() => cancelOrder(item.orderId)}
+                  onClick={() => cancelOrder(item._id)}
                   disabled={item.status === "Đã giao" || item.status === "Đã hủy"}
                 >
                   Hủy đơn hàng

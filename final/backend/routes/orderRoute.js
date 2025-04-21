@@ -1,5 +1,5 @@
 import express from "express";
-import { placeOrder, placeOrderMoMo, allOrders, userOrders, updateStatus, callbackMomo, transactionStatus, cancelOrder } from "../controllers/orderController.js";
+import { placeOrder, placeOrderMoMo, allOrders, userOrders, updateStatus, callbackMomo, transactionStatus, cancelOrder, deleteOrder } from "../controllers/orderController.js";
 import adminAuth from "../middleware/adminAuth.js";
 import authUser from "../middleware/auth.js";
 
@@ -14,6 +14,7 @@ orderRouter.post("/transaction", transactionStatus);
 // Admin routes
 orderRouter.post("/list", adminAuth, allOrders);
 orderRouter.post("/status", adminAuth, updateStatus);
+orderRouter.post("/delete", adminAuth, deleteOrder);
 
 // User routes
 orderRouter.post("/user-orders", authUser, userOrders);

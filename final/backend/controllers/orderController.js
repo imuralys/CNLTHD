@@ -188,8 +188,14 @@ const userOrders = async (req, res) => {
 const updateStatus = async (req, res) => {
   try {
     const { orderId, status } = req.body;
-    await orderModel.findOneAndUpdate({ orderId }, { status });
-    res.status(200).json({ success: true });
+    const order = await orderModel.findById(orderId);
+    
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Không tìm thấy đơn hàng" });
+    }
+
+    await orderModel.findByIdAndUpdate(orderId, { status });
+    res.status(200).json({ success: true, message: "Cập nhật trạng thái thành công" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -199,8 +205,54 @@ const updateStatus = async (req, res) => {
 const cancelOrder = async (req, res) => {
   try {
     const { orderId } = req.body;
-    await orderModel.findOneAndUpdate({ orderId }, { status: "Đã hủy" });
-    res.status(200).json({ success: true });
+    const order = await orderModel.findById(orderId);
+    
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Không tìm thấy đơn hàng" });
+    }
+
+    // Kiểm tra trạng thái đơn hàng
+    if (order.status === "Đã giao") {
+      return res.status(400).json({ success: false, message: "Không thể hủy đơn hàng đã giao" });
+    }
+
+    // Hoàn trả số lượng sản phẩm
+    for (const item of order.items) {
+      await productModel.findByIdAndUpdate(
+        item._id,
+        { $inc: { quantity: item.quantity } }
+      );
+    }
+
+    await orderModel.findByIdAndUpdate(orderId, { status: "Đã hủy" });
+    res.status(200).json({ success: true, message: "Hủy đơn hàng thành công" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Delete order (Admin)
+const deleteOrder = async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    const order = await orderModel.findById(orderId);
+    
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Không tìm thấy đơn hàng" });
+    }
+
+    // Hoàn trả số lượng sản phẩm nếu đơn hàng chưa giao
+    if (order.status !== "Đã giao") {
+      for (const item of order.items) {
+        await productModel.findByIdAndUpdate(
+          item._id,
+          { $inc: { quantity: item.quantity } }
+        );
+      }
+    }
+
+    await orderModel.findByIdAndDelete(orderId);
+    res.status(200).json({ success: true, message: "Xóa đơn hàng thành công" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -214,5 +266,6 @@ export {
   allOrders,
   userOrders,
   updateStatus,
-  cancelOrder
+  cancelOrder,
+  deleteOrder
 };
