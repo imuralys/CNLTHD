@@ -30,7 +30,6 @@ function Home() {
                                 <div className="text-center text-white">
                                 <h1 className="text-3xl md:text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400" style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: '2px' }}>GAMIFY STORE</h1>
                                     <p className="text-lg md:text-xl mb-6">Thế giới game đích thực dành cho bạn</p>
-                                    
                                 </div>
                             </div>
                         </div>
