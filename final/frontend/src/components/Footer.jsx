@@ -22,7 +22,7 @@ const Footer = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                123 Đường ABC, Quận XYZ, TP.HCM
+                273 An Dương Vương, Quận 5, TP.HCM
               </p>
               <p className="flex items-center text-[var(--text-secondary)]">
                 <svg className="w-5 h-5 mr-2 text-[var(--neon-pink)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,7 +51,7 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-[var(--background-dark)] text-center text-[var(--text-secondary)]">
-          <p>© 2024 Gamify Store. All rights reserved.</p>
+          <p>© 2025 Gamify Store. All rights reserved.</p>
         </div>
       </div>
     </footer>

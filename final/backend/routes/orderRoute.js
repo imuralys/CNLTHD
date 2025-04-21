@@ -5,12 +5,11 @@ import authUser from "../middleware/auth.js";
 
 const orderRouter = express.Router();
 
-// Payment Feature
+// Payment routes
 orderRouter.post("/place", authUser, placeOrder);
 orderRouter.post("/momo", authUser, placeOrderMoMo);
-orderRouter.post('/callback', callbackMomo);
-orderRouter.post('/transaction-status', transactionStatus);
-// orderRouter.get('/orders/status/:orderId', checkOrderStatus);
+orderRouter.post("/callback", callbackMomo);
+orderRouter.post("/transaction", transactionStatus);
 
 // Admin routes
 orderRouter.post("/list", adminAuth, allOrders);
@@ -18,6 +17,6 @@ orderRouter.post("/status", adminAuth, updateStatus);
 
 // User routes
 orderRouter.post("/user-orders", authUser, userOrders);
-orderRouter.post("/cancel-order", cancelOrder);
+orderRouter.post("/cancel-order", authUser, cancelOrder);
 
 export default orderRouter;

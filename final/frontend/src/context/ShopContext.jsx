@@ -12,8 +12,6 @@ const ShopContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [token, setToken] = useState("");
-  const [roomList, setRoomList] = useState([]);
-  const [eventList, setEventList] = useState([]);
   const delivery_fee = 5000;
 
   const addToCart = async (itemId) => {
@@ -55,31 +53,30 @@ const ShopContextProvider = (props) => {
   const updateQuantity = async (itemId, quantity) => {
     let cartData = structuredClone(cartItems);
     if (quantity === 0) {
-        delete cartData[itemId];
+      delete cartData[itemId];
     } else {
-        cartData[itemId] = quantity;
+      cartData[itemId] = quantity;
     }
     setCartItems(cartData);
 
     try {
-        await axios.post(`${backendURL}/api/cart/update`, { itemId, quantity }, { headers: { token } });
-        toast.success(quantity === 0 ? "Sản phẩm đã được xóa khỏi giỏ hàng" : "Giỏ hàng đã được cập nhật");
+      await axios.post(
+        `${backendURL}/api/cart/update`,
+        { itemId, quantity },
+        { headers: { token } }
+      );
     } catch (error) {
-        console.log(error);
-        toast.error("Đã xảy ra lỗi khi cập nhật giỏ hàng");
+      console.log(error);
+      toast.error(error.message);
     }
-};
-
+  };
 
   const getCartAmount = () => {
-    let totalAmount = 0;
-    for (const items in cartItems) {
-      const itemInfo = products.find((product) => product._id === items);
-      if (itemInfo && !isNaN(itemInfo.price)) {
-        totalAmount += itemInfo.price * cartItems[items];
-      }
+    let amount = 0;
+    for (const itemId in cartItems) {
+      amount += products.find((item) => item._id === itemId).price * cartItems[itemId];
     }
-    return totalAmount;
+    return amount;
   };
 
   const getProducts = async () => {
@@ -87,48 +84,6 @@ const ShopContextProvider = (props) => {
       const response = await axios.get(`${backendURL}/api/product/list`);
       if (response.data.success) {
         setProducts(response.data.products);
-      } else {
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message);
-    }
-  };
-
-  const getRoomList = async () => {
-    try {
-      const response = await axios.get(`${backendURL}/api/room/list`);
-      if (response.data.success) {
-        setRoomList(response.data.rooms);
-      } else {
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message);
-    }
-  };
-
-  const getRoomData = async () => {
-    try {
-        const {data} = await axios.get(backendURL + '/api/room/list')
-        if (data.success) {
-            setRoomList(data.rooms)
-        } else {
-            toast.error(data.message)
-        }
-    } catch (error) {
-        console.log(error)
-        toast.error(error.message)
-    }
-}
-
-  const getEventList = async () => {
-    try {
-      const response = await axios.get(`${backendURL}/api/event/list`);
-      if (response.data.success) {
-        setEventList(response.data.events);
       } else {
         toast.error(response.data.message);
       }
@@ -158,9 +113,6 @@ const ShopContextProvider = (props) => {
 
   useEffect(() => {
     getProducts();
-    getRoomList();
-    getEventList();
-    getRoomData();
   }, []);
 
   useEffect(() => {
@@ -183,13 +135,10 @@ const ShopContextProvider = (props) => {
     updateQuantity,
     setCartItems,
     getCartAmount,
-    delivery_fee, // Hàm tính tổng phí giao hàng
+    delivery_fee,
     backendURL,
     setToken,
-    token,
-    roomList,
-    eventList,
-    getRoomData,
+    token
   };
 
   return (

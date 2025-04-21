@@ -3,14 +3,11 @@ import orderModel from "../models/orderModel.js";
 import productModel from "../models/productModel.js";
 import crypto from "crypto";
 import axios from "axios";
-import { url } from "inspector";
-import { raw } from "express";
 
 // Placing order using COD
 const placeOrder = async (req, res) => {
   try {
     const { userId, items, amount, address } = req.body;
-    // console.log(req.body);
 
     if (items.length === 0) {
       return res.status(400).json({ success: false, message: "Không có sản phẩm trong giỏ hàng" });
@@ -27,7 +24,6 @@ const placeOrder = async (req, res) => {
     if (address.phone === "") {
       return res.status(400).json({ success: false, message: "Số điện thoại không được để trống" });
     }
-    
     
     const orderData = {
       userId,
@@ -48,53 +44,38 @@ const placeOrder = async (req, res) => {
   }
 };
 
-// Placeing order using momo payment
+// Place order using MoMo
 const placeOrderMoMo = async (req, res) => {
   try {
-    const { address, items, amount, userId } = req.body;
-    console.log(req.body);
-
-    var accessKey = process.env.MOMO_ACCESS_KEY;
-    var secretKey = process.env.MOMO_SECRET_KEY;
-    var orderInfo = "pay with MoMo";
-    var partnerCode = process.env.MOMO_PARTNER_CODE;
-    var redirectUrl = process.env.FRONTEND_URL;
-    var ipnUrl = "https://fcdf-2405-4802-9195-d730-c9df-dc44-cf9c-cca6.ngrok-free.app/api/order/callback"; // do mommo không thể chạy trên môi trường localhost nên phải dùng ngrok nhưng ngrok là tài khoản miễn phí nên cần phải nhập thủ công ở đường link này
-    var requestType = "payWithMethod";
-    var orderId = partnerCode + new Date().getTime();
-    var requestId = orderId;
-    var extraData = "";
-    var orderGroupId = "";
-    var autoCapture = true;
-    var lang = "vi";
-
-    var rawSignature =
-      "accessKey=" + accessKey + "&amount=" + amount + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId + "&orderInfo=" + orderInfo + "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl + "&requestId=" + requestId + "&requestType=" + requestType;
-
-    //signature
-    var signature = crypto
-      .createHmac("sha256", secretKey)
+    const { userId, items, amount, address } = req.body;
+    const orderId = new Date().getTime();
+    const requestId = orderId;
+    const orderInfo = "Thanh toan don hang";
+    const redirectUrl = "http://localhost:3000/orders";
+    const ipnUrl = "http://localhost:5000/api/order/callback";
+    const requestType = "captureWallet";
+    const extraData = "";
+    const partnerCode = "MOMO";
+    const accessKey = "F8BBA842ECF85";
+    const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
+    const rawSignature = "accessKey=" + accessKey + "&amount=" + amount + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId + "&orderInfo=" + orderInfo + "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl + "&requestId=" + requestId + "&requestType=" + requestType;
+    const signature = crypto.createHmac('sha256', secretKey)
       .update(rawSignature)
-      .digest("hex");
-
-    //json object send to MoMo endpoint
-    const requestBody = JSON.stringify({
+      .digest('hex');
+    const requestBody = {
       partnerCode: partnerCode,
-      partnerName: "Test",
-      storeId: "MomoTestStore",
+      accessKey: accessKey,
       requestId: requestId,
       amount: amount,
       orderId: orderId,
       orderInfo: orderInfo,
       redirectUrl: redirectUrl,
       ipnUrl: ipnUrl,
-      lang: lang,
-      requestType: requestType,
-      autoCapture: autoCapture,
       extraData: extraData,
-      orderGroupId: orderGroupId,
+      requestType: requestType,
       signature: signature,
-    });
+      lang: "vi"
+    };
     
     try {
       const response = await axios.post("https://test-payment.momo.vn/v2/gateway/api/create", requestBody, {
@@ -102,7 +83,6 @@ const placeOrderMoMo = async (req, res) => {
           "Content-Type": "application/json",
         },
       });
-      console.log("here");
       if (response.data.resultCode === 0) {
         const orderData = {
           userId,
@@ -132,119 +112,107 @@ const placeOrderMoMo = async (req, res) => {
   }
 };
 
+// MoMo payment callback
 const callbackMomo = async (req, res) => {
   try {
-    const { orderId, resultCode, signature, amount, extraData, message, orderType, partnerCode, payType, transId} = req.body; // extract parameters from request
+    const { orderId, resultCode } = req.body;
     if (resultCode === 0) {
-      await orderModel.findOneAndUpdate(
-        { orderId }, 
-        { payment: true }
-      );
+      await orderModel.findOneAndUpdate({ orderId }, { payment: true });
     }
-    res.status(200).json({ success: true });
-    console.log("true");
+    res.status(204).json();
   } catch (error) {
-    console.error("Callback error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
+// Check transaction status
 const transactionStatus = async (req, res) => {
-  const { orderId } = req.body;
-  const rawSignature = `accessKey=${process.env.MOMO_ACCESS_KEY}&orderId=${orderId}&partnerCode=${process.env.MOMO_PARTNER_CODE}&requestId=${orderId}`;
+  try {
+    const { orderId } = req.body;
+    const requestId = orderId;
+    const partnerCode = "MOMO";
+    const accessKey = "F8BBA842ECF85";
+    const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
+    const rawSignature = "accessKey=" + accessKey + "&orderId=" + orderId + "&partnerCode=" + partnerCode + "&requestId=" + requestId;
+    const signature = crypto.createHmac('sha256', secretKey)
+      .update(rawSignature)
+      .digest('hex');
+    const requestBody = {
+      partnerCode: partnerCode,
+      accessKey: accessKey,
+      requestId: requestId,
+      orderId: orderId,
+      signature: signature,
+      lang: "vi"
+    };
 
-  const signature = crypto
-    .createHmac("sha256", process.env.MOMO_SECRET_KEY)
-    .update(rawSignature)
-    .digest('hex')
+    const response = await axios.post("https://test-payment.momo.vn/v2/gateway/api/query", requestBody, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  const requestBody = JSON.stringify({
-    partnerCode: process.env.MOMO_PARTNER_CODE,
-    requestId: orderId,
-    orderId: orderId,
-    signature: signature,
-    lang: 'vi'
-  })
-
-  const option = {
-    method: "POST",
-    url: "https://test-payment.momo.vn/v2/gateway/api/query",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    data: requestBody,
+    if (response.data.resultCode === 0) {
+      await orderModel.findOneAndUpdate({ orderId }, { payment: true });
+      res.status(200).json({ success: true });
+    } else {
+      res.status(400).json({ success: false });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
+};
 
-  let result = await axios(option);
-  return res.status(200).json(result.data);
-}
-
-
-
-// All orders data for admin panel
+// Get all orders (Admin)
 const allOrders = async (req, res) => {
   try {
-    const orders = await orderModel.find({});
+    const orders = await orderModel.find().sort({ date: -1 });
     res.status(200).json({ success: true, orders });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// User Order Data for Frontend
+// Get user orders
 const userOrders = async (req, res) => {
   try {
     const { userId } = req.body;
-    const orders = await orderModel.find({ userId });
+    const orders = await orderModel.find({ userId }).sort({ date: -1 });
     res.status(200).json({ success: true, orders });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// Update Order Status form admin panel
+// Update order status (Admin)
 const updateStatus = async (req, res) => {
   try {
     const { orderId, status } = req.body;
-    await orderModel.findByIdAndUpdate(orderId, { status });
-    res.status(200).json({
-      success: true,
-      message: "Cập nhật trạng thái đơn hàng thành công",
-    });
+    await orderModel.findOneAndUpdate({ orderId }, { status });
+    res.status(200).json({ success: true });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
+// Cancel order
 const cancelOrder = async (req, res) => {
   try {
-    const { orderIds } = req.body;
-    const order = await orderModel.findOne({ _id: orderIds });
-    // console.log("orderIds", orderIds); 
-
-    if (!order) {
-      return res.status(404).json({ success: false, message: "Đơn hàng không tồn tại." });
-    }
-    if (order.status === "Đã giao") {
-      return res.status(400).json({ success: false, message: "Đơn hàng đã được giao không thể hủy." });
-    }
-    order.status = "Đã hủy";
-    await order.save();
-
-    for (let i of order.items) {
-      // const product = await productModel.findById(i._id);
-      await productModel.findByIdAndUpdate(i._id, { $inc: { quantity: i.quantity } });
-      console.log("đã cập nhập số lượng sản phẩm");
-    }
-
-    res.status(200).json({ success: true, message: "Đơn hàng đã được hủy thành công" });
+    const { orderId } = req.body;
+    await orderModel.findOneAndUpdate({ orderId }, { status: "Đã hủy" });
+    res.status(200).json({ success: true });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-
-export { placeOrder, placeOrderMoMo, allOrders, userOrders, updateStatus, callbackMomo, transactionStatus, cancelOrder };
+export {
+  placeOrder,
+  placeOrderMoMo,
+  callbackMomo,
+  transactionStatus,
+  allOrders,
+  userOrders,
+  updateStatus,
+  cancelOrder
+};
