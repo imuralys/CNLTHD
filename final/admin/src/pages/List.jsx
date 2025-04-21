@@ -135,9 +135,10 @@ const List = ({ token }) => {
               <div className="mb-4">
                 <p className="mb-2">Phân loại sản phẩm</p>
                 <select onChange={(e)=>setProductData({ ...productData, category: e.target.value })} value={productData.category} className="w-full px-3 py-2">
-                  <option value="Coffee">Coffee</option>
-                  <option value="Bánh ngọt">Bánh ngọt</option>
-                  <option value="Trà">Trà</option>
+                  <option value="Console">Console</option>
+                  <option value="Phụ kiện">Phụ kiện</option>
+                  <option value="Game">Game</option>
+                  <option value="Khác">Khác</option>
                 </select>
               </div>
               <div className="mb-4">

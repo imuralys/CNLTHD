@@ -171,9 +171,9 @@ const Add = ({token}) => {
           <p className="mb-2">Phân loại sản phẩm</p>
           <select onChange={(e)=>setCategory(e.target.value)} className="w-full px-3 py-2">
             <option value="Console">Console</option>
-            <option value="Accessories">Phụ kiện</option>
-            <option value="Games">Game</option>
-            <option value="Other">Khác</option>
+            <option value="Phụ kiện">Phụ kiện</option>
+            <option value="Game">Game</option>
+            <option value="Khác">Khác</option>
           </select>
         </div>
       </div>
