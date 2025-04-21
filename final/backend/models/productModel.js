@@ -11,9 +11,12 @@ const productSchema = new mongoose.Schema({
         }
     ],
     category: { type: String, required: true },
-    bestseller: { type: Boolean},
-    quantity: { type: Number, required: true},
-    date: { type: Number, required: true},
+    model: { type: String },
+    highlights: [{ type: String }],
+    includes: [{ type: String }],
+    bestseller: { type: Boolean },
+    quantity: { type: Number, required: true },
+    date: { type: Number, required: true },
 });
 
 const productModel = mongoose.model.product || mongoose.model("product", productSchema)
