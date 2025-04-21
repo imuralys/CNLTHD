@@ -101,7 +101,7 @@ const List = ({ token }) => {
             <p>{item.quantity}</p>
             <div className="flex justify-around items-center">
               <p onClick={() => editProduct(item)} className="text-right md:text-center cursor-pointer text-lg text-blue-600">Chỉnh sửa</p>
-              <p onClick={() => removeProduct(item._id)} className="text-right md:text-center cursor-pointer text-lg text-red-600">X</p>
+              <p onClick={() => removeProduct(item._id)} className="text-right md:text-center cursor-pointer text-lg text-red-600">Xóa</p>
             </div>
           </div>
         ))}

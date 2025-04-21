@@ -43,9 +43,8 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-xl font-bold gradient-text" style={{ fontFamily: "'Orbitron', sans-serif" }}>GIỜ MỞ CỬA</h3>
             <div className="space-y-2 text-[var(--text-secondary)]">
-              <p>Thứ 2 - Thứ 6: 9:00 - 21:00</p>
-              <p>Thứ 7: 9:00 - 22:00</p>
-              <p>Chủ nhật: 10:00 - 20:00</p>
+              <p>Thứ 2 - Thứ 7: 9:00 - 22:00</p>
+              <p>Chủ nhật: 10:00 - 21:00</p>
             </div>
           </div>
         </div>
