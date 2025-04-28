@@ -131,7 +131,7 @@ const bookingRoom = async(req, res) => {
         // save new slot data to room
         await roomModel.findByIdAndUpdate(roomId, {room_booked})
         res.json({success:true, message:"Đặt phòng thành công"})
-   } catch (error) {
+    } catch (error) {
         console.log(error);
         res.json({success:false, message:error.message})
     }
