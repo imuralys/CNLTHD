@@ -6,7 +6,7 @@ const connectDB = async () => {
     });
 
     await mongoose.connect(`${process.env.MONGODB_URI}`, {
-        dbName: 'cafewebsite',  // Specify the database name here
+        dbName: 'Gamifystore',  // Specify the database name here
     });
 };
 

@@ -48,6 +48,7 @@ const Order = ({ token }) => {
     }
   };
 
+  
   const deleteOrder = async (orderId) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa đơn hàng này?")) {
       try {
@@ -115,11 +116,11 @@ const Order = ({ token }) => {
                     value={order.status}
                     onChange={(e) => statusHandler(e, order._id)}
                   >
-                    <option value="Đã đặt hàng">Đã đặt hàng</option>
-                    <option value="Đang xử lý">Đang xử lý</option>
-                    <option value="Đang giao">Đang giao</option>
-                    <option value="Đã giao">Đã giao</option>
-                    <option value="Đã hủy">Đã hủy</option>
+                    <option value="Đã đặt hàng" disabled={order.status !== "Đã đặt hàng"}>Đã đặt hàng</option>
+                    <option value="Đang xử lý" disabled={order.status !== "Đang xử lý"}>Đang xử lý</option>
+                    <option value="Đang giao"disabled={order.status !== "Đang giao"}>Đang giao</option>
+                    <option value="Đã giao" disabled={order.status !== "Đã giao"}>Đã giao</option>
+                    <option value="Đã hủy" disabled={order.status !== "Đã hủy"}>Đã hủy</option>
                   </select>
                 </td>
                 <td className="py-2 px-4 border">
