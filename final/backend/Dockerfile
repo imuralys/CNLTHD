@@ -1,19 +1,23 @@
-# Sử dụng Node.js làm base image
+
 FROM node:18-alpine
 
-# Tạo thư mục làm việc
+RUN apk add --no-cache python3 make g++
+
+# Tạo thư mục làm việc trong container
 WORKDIR /app
 
-# Copy package.json và package-lock.json
+# Copy các file khai báo dependency trước để tối ưu cache layer
 COPY package*.json ./
-# Cài đặt dependencies
-RUN npm install
 
-# Copy source code
+# Cài dependency và rebuild bcrypt cho đúng môi trường Linux
+RUN npm install
+RUN npm rebuild bcrypt --build-from-source
+
+# Copy toàn bộ source code vào container
 COPY . .
 
-# Expose cổng 5000
+# Mở cổng backend
 EXPOSE 5000
 
-# Khởi chạy ứng dụng
-CMD ["npm", "start"] 
+# Chạy server
+CMD ["node", "server.js"]
