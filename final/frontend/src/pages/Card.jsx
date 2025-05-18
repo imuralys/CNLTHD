@@ -55,6 +55,8 @@ const Card = () => {
           const productData = products.find(
             (product) => product._id === item._id
           );
+          if (!productData) return null;
+
           const max = maxQuantity[item._id] || 2; // Mặc định là 2 nếu không lấy được max
 
           return (
@@ -65,7 +67,7 @@ const Card = () => {
               <div className="flex items-start gap-6">
                 <img
                   className="w-16 sm:w-20"
-                  src={productData.images[0].url}
+                  src={productData.images[0]?.url}
                   alt=""
                 />
                 <div>

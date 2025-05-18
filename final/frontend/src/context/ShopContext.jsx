@@ -72,11 +72,18 @@ const ShopContextProvider = (props) => {
   };
 
   const getCartAmount = () => {
-    let amount = 0;
-    for (const itemId in cartItems) {
-      amount += products.find((item) => item._id === itemId).price * cartItems[itemId];
-    }
-    return amount;
+    let total = 0;
+
+    Object.entries(cartItems).forEach(([productId, quantity]) => {
+      const product = products.find((p) => p._id === productId);
+
+      if (product && typeof product.price === "number") {
+        total += product.price * quantity;
+      } else {
+        console.warn(`⚠️ Không tìm thấy sản phẩm với ID: ${productId}`);
+      }
+    });
+    return total;
   };
 
   const getProducts = async () => {
