@@ -51,8 +51,8 @@ const placeOrderMoMo = async (req, res) => {
     const orderId = new Date().getTime();
     const requestId = orderId;
     const orderInfo = "Thanh toan don hang";
-    const redirectUrl = "http://localhost:3000/orders";
-    const ipnUrl = "http://localhost:5000/api/order/callback";
+    const redirectUrl = "http://localhost:4000/orders";
+    const ipnUrl = "http://localhost:5001/api/order/callback";
     const requestType = "captureWallet";
     const extraData = "";
     const partnerCode = "MOMO";

@@ -35,54 +35,69 @@ const PlaceOrder = () => {
   };
   const navigate = useNavigate();
   const submitHandler = async (event) => {
-    const amount = getCartAmount() + delivery_fee;
     event.preventDefault();
+    const amount = getCartAmount() + delivery_fee;
+  
     try {
       let orderItems = [];
+  
       for (const items in cartItems) {
         const itemInfo = structuredClone(
           products.find((product) => product._id === items)
         );
+  
         if (itemInfo) {
           itemInfo.quantity = cartItems[items];
           orderItems.push(itemInfo);
-          
-          const response = await axios.post(backendURL + "/api/product/update-quantity", {
-            productId: itemInfo._id,
-            quantity: itemInfo.quantity,
-          }, {
-            headers: { token }
-          });
-          if (!response.data.success) {
-            toast.error("Cập nhật số lượng sản phẩm thất bại!");
+  
+          try {
+            const response = await axios.post(
+              backendURL + "/api/product/update-quantity",
+              {
+                productId: itemInfo._id,
+                quantity: itemInfo.quantity,
+              },
+              {
+                headers: { token },
+              }
+            );
+  
+            if (!response.data?.success) {
+              toast.error(response.data?.message || "Cập nhật số lượng thất bại!");
+            }
+          } catch (err) {
+            console.error("Lỗi khi cập nhật số lượng:", err);
+            const msg = err.response?.data?.message || "Lỗi kết nối tới server";
+            toast.error(msg);
           }
         }
       }
   
-      let orderData = {
-        address: formData,
+      // 🆕 Gửi đơn hàng đến backend
+      const placeRes = await axios.post(backendURL + "/api/order/place", {
         items: orderItems,
-        amount: amount,
-      };
+        amount,
+        address: `${formData.address}, ${formData.ward}, ${formData.district}, ${formData.city}`,
+        phone: formData.phone,
+        payment: method,
+      }, {
+        headers: { token }
+      });
   
-      // Gửi đơn hàng
-      const orderResponse = await axios.post(
-        backendURL + "/api/order/place",
-        orderData,
-        { headers: { token } }
-      );
-      if (orderResponse.data.success) {
+      if (placeRes.data.success) {
+        toast.success("Đặt hàng thành công!");
         setCartItems({});
-        navigate("/orders");
+        navigate("/my-orders");
       } else {
-        toast.error(orderResponse.data.message);
+        toast.error(placeRes.data.message || "Đặt hàng thất bại");
       }
-    } catch (error) {
-      console.log(error.orderResponse.data.message);
-      toast.error(error.orderResponse.data.message);
+  
+    } catch (err) {
+      console.error("Lỗi trong submitHandler:", err);
+      const msg = err.response?.data?.message || err.message || "Lỗi không xác định";
+      toast.error(msg);
     }
   };
-  
 
   const getUserData = async () => {
     try {

@@ -16,7 +16,7 @@ COPY . .
 # Build ứng dụng
 RUN npm run build
 
-# Expose cổng 3000
+# Expose cổng 3010
 EXPOSE 3000
 
 # Khởi chạy ứng dụng
