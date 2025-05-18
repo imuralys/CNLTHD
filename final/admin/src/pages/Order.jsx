@@ -26,8 +26,8 @@ const Order = ({ token }) => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error.message);
-      toast.error(error.message);
+      console.log("Lỗi fetchAllOrders: ",error.message);
+      toast.error(error.response?.data?.message || error.message);
     }
   };
 

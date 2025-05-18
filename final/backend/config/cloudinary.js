@@ -1,4 +1,6 @@
 import { v2 as clodinary } from 'cloudinary'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const connectCloudinary = async() => {
     clodinary.config({
@@ -8,3 +10,5 @@ const connectCloudinary = async() => {
     })
 }
 export default connectCloudinary
+
+
